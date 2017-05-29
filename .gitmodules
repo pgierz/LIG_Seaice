@@ -1,0 +1,3 @@
+[submodule "change_lsm_cosmos"]
+	path = change_lsm_cosmos
+	url = https://github.com/pgierz/change_lsm_cosmos
