@@ -43,15 +43,24 @@ for fin in glob.glob(path+expid+"/outdata/mpiom/*.tar"):
     seaice_array_min = np.append(seaice_array_min, fout_min)
 
 fig, ax1 = plt.subplots()
-ax1.plot(seaice_array_mean, color="black", lw=2)
-ax1.plot(seaice_array_min, color="gray", lw=0.5)
-ax1.plot(seaice_array_max, color="gray", lw=0.5)
+l1 = ax1.plot(seaice_array_mean, color="black", lw=2, label="Yearly Average")
+l2 = ax1.plot(seaice_array_min, color="red", lw=0.5, label="Yearly Minimum")
+l3 = ax1.plot(seaice_array_max, color="blue", lw=0.5, label="Yearly Maximum")
 ax1.set_xlabel("Simulation Time (years)")
 ax1.set_ylabel("Sea Ice Area Arctic Basin (m$^{2}$)")
+
+# Add shading for the region over which we shall average:
+r1 = ax1.fill_between(np.arange(150,200), *ax1.get_ylim(), 
+                 color="lightgray", hatch="//", alpha=0.5, 
+                 label="Averaging Period")
+# ax1.legend(fancybox=True, loc=0)
+
 
 # Add a subplot to show the Arctic basin averaging area
 ax2 = inset_axes(ax1, width="30%", height="30%", loc=4)
 m = map_nhem(fill_color=None, thisax=ax2)
 bek_file = netcdf.netcdf_file("/home/ace/pgierz/reference_stuff/bek_2.nc")
 plot_var_from_ncdf_file("THO", bek_file, m)
-plt.show()
+plt.savefig(expid+"_spinup_period_arctic_seaice.pdf")
+plt.close()
+exit
