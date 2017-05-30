@@ -30,6 +30,13 @@ RCP6_early = netcdf.netcdf_file(get_remote_data(prepath+"/r6ao/post/mpiom/r6ao_m
 # Reduced GRIS
 GRIS = cosmos_standard_analysis("pgierz", "rayl4", "/csys/nobackup1_PALEO/pgierz/cosmos-aso/", "pfe0021").ymonmean("SICOMO")
 
+# Runs with altered Berring Straight
+prepath = "pgierz@stan1:/ace/user/pgierz/cosmos-aso"
+Sensitivity_130 = cosmos_standard_analysis(user, host, prepath.split(":")[-1], "LIG130_dles_nbs_w").ymonmean("SICOMO")
+
+
+
+
 f, axs = plt.subplots(2, 2)
 lons = [30.983333333333334, 140.06666666666666, 171.71666666666667, 14.033333333333333]
 lats = [81.9, 81.31666666666666, 85.23333333333333, 85.55]
@@ -45,11 +52,13 @@ for ax, lon, lat, tit in zip(axs.flatten(), lons, lats, titles):
     R6e = CDO.remapnn("lon="+str(lon)+"/lat="+str(lat), input=RCP6_early.filename, returnArray="var15").squeeze()
     G = CDO.remapnn("lon="+str(lon)+"/lat="+str(lat), input=GRIS.filename, returnArray="SICOMO").squeeze()
     CTRL = CDO.remapnn("lon="+str(lon)+"/lat="+str(lat), input=PI.filename, returnArray="SICOMO").squeeze()
+    Sens = CDO.remapnn("lon="+str(lon)+"/lat="+str(lat), input=Sensitivity_130.filename, returnArray="SICOMO").squeeze()
 
     ax.plot(E130, "o-", label="LIG-130")
     ax.plot(E125, "o-", label="LIG-125")
     ax.plot(E120, "o-", label="LIG-120")
     ax.plot(G, "o-", label="LIG-130, Reduced GrIS")
+    ax.plot(Sens, "o-", color="gray", label="LIG-130, Closed BS + Dry Shelf")
     ax.plot(R4, "o:", color="purple", label="RCP4.5 (2300)") 
     ax.plot(R4e, "o-", color="purple", label="RCP4.5 (2100)")
     ax.plot(R6, "o:", color="pink", label="RCP6 (2300)")
@@ -61,7 +70,7 @@ for ax, lon, lat, tit in zip(axs.flatten(), lons, lats, titles):
     _decorate_x_axes_for_ymonmean(ax)
 
 plt.subplots_adjust(bottom=0.2)
-plt.legend(loc=0, ncol=3, bbox_to_anchor=(0.2, -0.2))
+plt.legend(loc=0, ncol=4, bbox_to_anchor=(0.2, -0.2))
 # f.setSubplotParams(left=None, bottom=None, right=None, top=None, wspace=None, hspace=None)
 # plt.savefig("Seaice_seasonal_cycle_RStein.png")
 # plt.close()
